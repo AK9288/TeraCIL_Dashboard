@@ -1,5 +1,8 @@
 {
   "stage": 1,
+  "method": "base",
+  "seed": 42,
+  "checkpoint_file": "stage1_base_seed42.pt",
   "num_classes": 3,
   "class_names": [
     "Forest",
@@ -28,7 +31,47 @@
     "int8_kb": 59.28,
     "total_params": 60707
   },
-  "top1_accuracy": 0.9662745098039216,
-  "top2_accuracy": 0.9952941176470588,
-  "macro_f1": 0.9649000746351968
+  "top1_accuracy": 0.9694117647058823,
+  "top2_accuracy": 0.9992156862745099,
+  "macro_f1": 0.9680663396087352,
+  "metrics_summary": {
+    "top1_accuracy_percent": "96.94%",
+    "top2_accuracy_percent": "99.92%",
+    "macro_f1": 0.9681
+  },
+  "per_class_metrics": {
+    "Forest": {
+      "precision": 0.9408033826638478,
+      "recall": 0.9888888888888889,
+      "f1": 0.9642470205850487,
+      "accuracy": 0.9888888888888889,
+      "support": 450
+    },
+    "Residential": {
+      "precision": 0.9977578475336323,
+      "recall": 0.9888888888888889,
+      "f1": 0.9933035714285714,
+      "accuracy": 0.9888888888888889,
+      "support": 450
+    },
+    "River": {
+      "precision": 0.9719101123595506,
+      "recall": 0.9226666666666666,
+      "f1": 0.9466484268125855,
+      "accuracy": 0.9226666666666666,
+      "support": 375
+    }
+  },
+  "replay_buffer": {
+    "replay_checkpoint_file": "stage1_replay_seed42.json",
+    "capacity": 500,
+    "seed": 42,
+    "total_exemplars": 500,
+    "exemplars_per_class": {
+      "0": 167,
+      "1": 167,
+      "2": 166
+    }
+  },
+  "generated_at": "2026-10-21T18:22:31.410861+00:00"
 }

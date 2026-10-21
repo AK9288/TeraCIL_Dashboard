@@ -1,0 +1,87 @@
+{
+  "stage": 2,
+  "method": "joint",
+  "seed": 42,
+  "checkpoint_file": "stage2_joint_seed42.pt",
+  "num_classes": 4,
+  "class_names": [
+    "Forest",
+    "Residential",
+    "River",
+    "Highway"
+  ],
+  "class_to_idx": {
+    "Forest": 0,
+    "Residential": 1,
+    "River": 2,
+    "Highway": 3
+  },
+  "feature_dim": 64,
+  "input_resolution": [
+    3,
+    64,
+    64
+  ],
+  "parameter_counts": {
+    "backbone": 60512,
+    "classifier": 260,
+    "total": 60772,
+    "trainable": 60772
+  },
+  "size_kb": {
+    "fp32_kb": 237.39,
+    "int8_kb": 59.35,
+    "total_params": 60772
+  },
+  "top1_accuracy": 0.8357575757575758,
+  "top2_accuracy": 0.9884848484848485,
+  "macro_f1": 0.8196706635275806,
+  "metrics_summary": {
+    "top1_accuracy_percent": "83.58%",
+    "top2_accuracy_percent": "98.85%",
+    "macro_f1": 0.8197
+  },
+  "per_class_metrics": {
+    "Forest": {
+      "precision": 0.9503239740820735,
+      "recall": 0.9777777777777777,
+      "f1": 0.963855421686747,
+      "accuracy": 0.9777777777777777,
+      "support": 450
+    },
+    "Residential": {
+      "precision": 0.9279661016949152,
+      "recall": 0.9733333333333334,
+      "f1": 0.9501084598698482,
+      "accuracy": 0.9733333333333334,
+      "support": 450
+    },
+    "River": {
+      "precision": 0.6892230576441103,
+      "recall": 0.7333333333333333,
+      "f1": 0.710594315245478,
+      "accuracy": 0.7333333333333333,
+      "support": 375
+    },
+    "Highway": {
+      "precision": 0.7151898734177216,
+      "recall": 0.6026666666666667,
+      "f1": 0.6541244573082489,
+      "accuracy": 0.6026666666666667,
+      "support": 375
+    }
+  },
+  "replay_buffer": {
+    "replay_checkpoint_file": "stage2_replay_seed42.json",
+    "capacity": 500,
+    "seed": 42,
+    "total_exemplars": 500,
+    "exemplars_per_class": {
+      "0": 125,
+      "1": 125,
+      "2": 125,
+      "3": 125
+    }
+  },
+  "generated_at": "2026-10-21T18:22:31.459345+00:00"
+}

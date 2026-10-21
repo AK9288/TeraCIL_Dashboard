@@ -15,6 +15,12 @@ build/
 # SatReCIL repository (dashboard runs standalone)
 SatReCIL/
 
+# Large datasets and archives
+*.zip
+*.tar.gz
+*.tar
+*.7z
+
 # IDE & OS files
 .vscode/
 .idea/

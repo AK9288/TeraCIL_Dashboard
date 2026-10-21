@@ -1,5 +1,8 @@
 {
   "stage": 3,
+  "method": "replay",
+  "seed": 42,
+  "checkpoint_file": "stage3_replay_seed42.pt",
   "num_classes": 5,
   "class_names": [
     "Forest",
@@ -32,7 +35,71 @@
     "int8_kb": 59.41,
     "total_params": 60837
   },
-  "top1_accuracy": 0.7654320987654321,
-  "top2_accuracy": 0.8222222222222222,
-  "macro_f1": 0.7394087975796625
+  "top1_accuracy": 0.7491358024691358,
+  "top2_accuracy": 0.9466666666666667,
+  "macro_f1": 0.7379166757225137,
+  "metrics_summary": {
+    "top1_accuracy_percent": "74.91%",
+    "top2_accuracy_percent": "94.67%",
+    "macro_f1": 0.7379
+  },
+  "per_class_metrics": {
+    "Forest": {
+      "precision": 0.9445628997867804,
+      "recall": 0.9844444444444445,
+      "f1": 0.9640914036996736,
+      "accuracy": 0.9844444444444445,
+      "support": 450
+    },
+    "Residential": {
+      "precision": 0.9555555555555556,
+      "recall": 0.6688888888888889,
+      "f1": 0.7869281045751634,
+      "accuracy": 0.6688888888888889,
+      "support": 450
+    },
+    "River": {
+      "precision": 0.6572769953051644,
+      "recall": 0.7466666666666667,
+      "f1": 0.6991260923845194,
+      "accuracy": 0.7466666666666667,
+      "support": 375
+    },
+    "Highway": {
+      "precision": 0.52046783625731,
+      "recall": 0.4746666666666667,
+      "f1": 0.496513249651325,
+      "accuracy": 0.4746666666666667,
+      "support": 375
+    },
+    "Industrial": {
+      "precision": 0.6659619450317125,
+      "recall": 0.84,
+      "f1": 0.7429245283018868,
+      "accuracy": 0.84,
+      "support": 375
+    }
+  },
+  "replay_buffer": {
+    "replay_checkpoint_file": "stage3_replay_seed42.json",
+    "capacity": 500,
+    "seed": 42,
+    "total_exemplars": 500,
+    "exemplars_per_class": {
+      "0": 100,
+      "1": 100,
+      "2": 100,
+      "3": 100,
+      "4": 100
+    }
+  },
+  "generated_at": "2026-10-21T18:22:31.570617+00:00",
+  "continual_learning_config": {
+    "strategy": "kd_replay",
+    "kd_lambda": 0.5,
+    "kd_temperature": 2.0,
+    "feature_distill_lambda": 0.1,
+    "use_class_weights": true,
+    "use_weight_alignment": true
+  }
 }

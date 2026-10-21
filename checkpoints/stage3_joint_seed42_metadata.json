@@ -1,0 +1,97 @@
+{
+  "stage": 3,
+  "method": "joint",
+  "seed": 42,
+  "checkpoint_file": "stage3_joint_seed42.pt",
+  "num_classes": 5,
+  "class_names": [
+    "Forest",
+    "Residential",
+    "River",
+    "Highway",
+    "Industrial"
+  ],
+  "class_to_idx": {
+    "Forest": 0,
+    "Residential": 1,
+    "River": 2,
+    "Highway": 3,
+    "Industrial": 4
+  },
+  "feature_dim": 64,
+  "input_resolution": [
+    3,
+    64,
+    64
+  ],
+  "parameter_counts": {
+    "backbone": 60512,
+    "classifier": 325,
+    "total": 60837,
+    "trainable": 60837
+  },
+  "size_kb": {
+    "fp32_kb": 237.64,
+    "int8_kb": 59.41,
+    "total_params": 60837
+  },
+  "top1_accuracy": 0.8474074074074074,
+  "top2_accuracy": 0.9762962962962963,
+  "macro_f1": 0.830350611640922,
+  "metrics_summary": {
+    "top1_accuracy_percent": "84.74%",
+    "top2_accuracy_percent": "97.63%",
+    "macro_f1": 0.8304
+  },
+  "per_class_metrics": {
+    "Forest": {
+      "precision": 0.8851485148514852,
+      "recall": 0.9933333333333333,
+      "f1": 0.9361256544502617,
+      "accuracy": 0.9933333333333333,
+      "support": 450
+    },
+    "Residential": {
+      "precision": 0.9096509240246407,
+      "recall": 0.9844444444444445,
+      "f1": 0.9455709711846318,
+      "accuracy": 0.9844444444444445,
+      "support": 450
+    },
+    "River": {
+      "precision": 0.691358024691358,
+      "recall": 0.7466666666666667,
+      "f1": 0.717948717948718,
+      "accuracy": 0.7466666666666667,
+      "support": 375
+    },
+    "Highway": {
+      "precision": 0.7892561983471075,
+      "recall": 0.5093333333333333,
+      "f1": 0.6191247974068071,
+      "accuracy": 0.5093333333333333,
+      "support": 375
+    },
+    "Industrial": {
+      "precision": 0.9196891191709845,
+      "recall": 0.9466666666666667,
+      "f1": 0.9329829172141918,
+      "accuracy": 0.9466666666666667,
+      "support": 375
+    }
+  },
+  "replay_buffer": {
+    "replay_checkpoint_file": "stage3_replay_seed42.json",
+    "capacity": 500,
+    "seed": 42,
+    "total_exemplars": 500,
+    "exemplars_per_class": {
+      "0": 100,
+      "1": 100,
+      "2": 100,
+      "3": 100,
+      "4": 100
+    }
+  },
+  "generated_at": "2026-10-21T18:22:31.541428+00:00"
+}
