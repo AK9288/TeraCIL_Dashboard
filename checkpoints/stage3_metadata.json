@@ -1,0 +1,38 @@
+{
+  "stage": 3,
+  "num_classes": 5,
+  "class_names": [
+    "Forest",
+    "Residential",
+    "River",
+    "Highway",
+    "Industrial"
+  ],
+  "class_to_idx": {
+    "Forest": 0,
+    "Residential": 1,
+    "River": 2,
+    "Highway": 3,
+    "Industrial": 4
+  },
+  "feature_dim": 64,
+  "input_resolution": [
+    3,
+    64,
+    64
+  ],
+  "parameter_counts": {
+    "backbone": 60512,
+    "classifier": 325,
+    "total": 60837,
+    "trainable": 60837
+  },
+  "size_kb": {
+    "fp32_kb": 237.64,
+    "int8_kb": 59.41,
+    "total_params": 60837
+  },
+  "top1_accuracy": 0.7654320987654321,
+  "top2_accuracy": 0.8222222222222222,
+  "macro_f1": 0.7394087975796625
+}

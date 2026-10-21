@@ -1,0 +1,22 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache & build files
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# SatReCIL repository (dashboard runs standalone)
+SatReCIL/
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
