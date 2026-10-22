@@ -29,75 +29,24 @@ for candidate_dir in [PROJECT_ROOT, PROJECT_ROOT / "SatReCIL"]:
     if candidate_dir.exists() and str(candidate_dir) not in sys.path:
         sys.path.insert(0, str(candidate_dir))
 
-# ----------------- Model Architecture: EuroSatCompactCNN -----------------
-try:
-    from src.model import EuroSatCompactCNN, create_model
-except ImportError:
-    try:
-        from SatReCIL.src.model import EuroSatCompactCNN, create_model
-    except ImportError:
-        class EuroSatCompactCNN(nn.Module):
-            """
-            Compact Custom CNN for EuroSAT RGB classification (64x64x3).
-            Matches SatReCIL architecture exactly (~60,512 backbone parameters).
-            """
-            def __init__(self, num_classes: int = 3, in_channels: int = 3, feature_dim: int = 64):
-                super().__init__()
-                assert num_classes >= 1, "num_classes must be at least 1"
-                self.num_classes = num_classes
-                self.in_channels = in_channels
-                self.feature_dim = feature_dim
+# ----------------- Model Architecture & Inference Integration -----------------
+# Directly import model architecture and preprocessing from classify_image.py
+import classify_image
+from classify_image import (
+    EuroSatCompactCNN,
+    load_checkpoint as load_checkpoint_from_cli,
+    get_transform as get_cli_transform,
+    EUROSAT_MEAN,
+    EUROSAT_STD,
+    IMAGE_SIZE,
+)
 
-                self.conv1 = nn.Conv2d(in_channels, 16, kernel_size=3, padding=1)
-                self.relu1 = nn.ReLU(inplace=True)
-                self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+def create_model(num_classes: int = 3) -> EuroSatCompactCNN:
+    return EuroSatCompactCNN(num_classes=num_classes)
 
-                self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
-                self.relu2 = nn.ReLU(inplace=True)
-                self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
-
-                self.conv3 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-                self.relu3 = nn.ReLU(inplace=True)
-                self.pool3 = nn.MaxPool2d(kernel_size=2, stride=2)
-
-                self.conv4 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
-                self.relu4 = nn.ReLU(inplace=True)
-
-                self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
-                self.classifier = nn.Linear(feature_dim, num_classes)
-
-            def extract_features(self, x: torch.Tensor) -> torch.Tensor:
-                x = self.pool1(self.relu1(self.conv1(x)))
-                x = self.pool2(self.relu2(self.conv2(x)))
-                x = self.pool3(self.relu3(self.conv3(x)))
-                x = self.relu4(self.conv4(x))
-                x = self.global_pool(x)
-                return torch.flatten(x, 1)
-
-            def forward(self, x: torch.Tensor) -> torch.Tensor:
-                features = self.extract_features(x)
-                return self.classifier(features)
-
-            def get_parameter_counts(self) -> Dict[str, int]:
-                backbone = sum(p.numel() for m in [self.conv1, self.conv2, self.conv3, self.conv4] for p in m.parameters())
-                classifier = sum(p.numel() for p in self.classifier.parameters())
-                total = sum(p.numel() for p in self.parameters())
-                return {"backbone": backbone, "classifier": classifier, "total": total}
-
-            def get_model_size(self) -> Dict[str, float]:
-                counts = self.get_parameter_counts()
-                return {
-                    "fp32_kb": round((counts["total"] * 4) / 1024.0, 2),
-                    "int8_kb": round((counts["total"] * 1) / 1024.0, 2),
-                    "total_params": counts["total"],
-                }
-
-        def create_model(num_classes: int = 3) -> EuroSatCompactCNN:
-            return EuroSatCompactCNN(num_classes=num_classes)
-
-# ----------------- SatReCIL Normalization & Staging -----------------
-NORMALIZE_MEAN = (0.3444, 0.3803, 0.4078)
-NORMALIZE_STD = (0.2026, 0.1369, 0.1158)
+# Backwards compatibility aliases
+NORMALIZE_MEAN = EUROSAT_MEAN
+NORMALIZE_STD = EUROSAT_STD
 IMAGE_SIZE = (64, 64)
 
 # SatReCIL incremental stage definitions linking both .json and .pt checkpoints
@@ -297,7 +246,15 @@ def load_json_checkpoint(filename: str) -> Optional[Dict]:
 
 
 def load_checkpoint_into_model(model: nn.Module, checkpoint_path: Path) -> nn.Module:
-    """Load SatReCIL PyTorch checkpoint dictionary."""
+    """Load SatReCIL PyTorch checkpoint dictionary using classify_image."""
+    try:
+        loaded_model, _, _ = load_checkpoint_from_cli(checkpoint_path)
+        loaded_model.to(DEVICE)
+        loaded_model.eval()
+        return loaded_model
+    except Exception:
+        pass
+
     checkpoint = torch.load(checkpoint_path, map_location=DEVICE, weights_only=False)
 
     if isinstance(checkpoint, nn.Module):
@@ -328,7 +285,7 @@ def load_checkpoint_into_model(model: nn.Module, checkpoint_path: Path) -> nn.Mo
             ckpt_classes = cleaned["classifier.weight"].shape[0]
             if model.classifier.out_features != ckpt_classes:
                 model.num_classes = ckpt_classes
-                model.classifier = nn.Linear(model.feature_dim, ckpt_classes)
+                model.classifier = nn.Linear(64, ckpt_classes)
 
         model.load_state_dict(cleaned, strict=True)
     else:
@@ -353,11 +310,7 @@ def get_cached_model(num_classes: int, checkpoint_path_str: Optional[str], mtime
 def preprocess_image(image: Image.Image) -> torch.Tensor:
     """Convert an uploaded image to 64x64 RGB input with SatReCIL EuroSAT normalization."""
     image = ImageOps.exif_transpose(image).convert("RGB")
-    transform = T.Compose([
-        T.Resize(IMAGE_SIZE, interpolation=T.InterpolationMode.BILINEAR),
-        T.ToTensor(),
-        T.Normalize(mean=NORMALIZE_MEAN, std=NORMALIZE_STD),
-    ])
+    transform = get_cli_transform()
     return transform(image).unsqueeze(0)
 
 
