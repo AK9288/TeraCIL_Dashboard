@@ -35,48 +35,48 @@
     "int8_kb": 59.41,
     "total_params": 60837
   },
-  "top1_accuracy": 0.8716049382716049,
-  "top2_accuracy": 0.9827160493827161,
-  "macro_f1": 0.8651184294107688,
+  "top1_accuracy": 0.8883950617283951,
+  "top2_accuracy": 0.9812345679012345,
+  "macro_f1": 0.8818248497082518,
   "metrics_summary": {
-    "top1_accuracy_percent": "87.16%",
-    "top2_accuracy_percent": "98.27%",
-    "macro_f1": 0.8651
+    "top1_accuracy_percent": "88.84%",
+    "top2_accuracy_percent": "98.12%",
+    "macro_f1": 0.8818
   },
   "per_class_metrics": {
     "Forest": {
-      "precision": 0.9527896995708155,
-      "recall": 0.9866666666666667,
-      "f1": 0.9694323144104804,
-      "accuracy": 0.9866666666666667,
+      "precision": 0.9672489082969432,
+      "recall": 0.9844444444444445,
+      "f1": 0.9757709251101322,
+      "accuracy": 0.9844444444444445,
       "support": 450
     },
     "Residential": {
-      "precision": 0.9744186046511628,
-      "recall": 0.9311111111111111,
-      "f1": 0.9522727272727273,
-      "accuracy": 0.9311111111111111,
+      "precision": 0.9664429530201343,
+      "recall": 0.96,
+      "f1": 0.9632107023411371,
+      "accuracy": 0.96,
       "support": 450
     },
     "River": {
-      "precision": 0.7591623036649214,
-      "recall": 0.7733333333333333,
-      "f1": 0.7661822985468957,
-      "accuracy": 0.7733333333333333,
-      "support": 375
-    },
-    "Highway": {
-      "precision": 0.7154046997389034,
+      "precision": 0.8353658536585366,
       "recall": 0.7306666666666667,
-      "f1": 0.7229551451187335,
+      "f1": 0.7795163584637269,
       "accuracy": 0.7306666666666667,
       "support": 375
     },
+    "Highway": {
+      "precision": 0.7242206235011991,
+      "recall": 0.8053333333333333,
+      "f1": 0.7626262626262627,
+      "accuracy": 0.8053333333333333,
+      "support": 375
+    },
     "Industrial": {
-      "precision": 0.9285714285714286,
-      "recall": 0.9013333333333333,
-      "f1": 0.9147496617050067,
-      "accuracy": 0.9013333333333333,
+      "precision": 0.928,
+      "recall": 0.928,
+      "f1": 0.928,
+      "accuracy": 0.928,
       "support": 375
     }
   },
@@ -93,7 +93,7 @@
       "4": 100
     }
   },
-  "generated_at": "2026-10-21T18:22:31.565201+00:00",
+  "generated_at": "2026-10-22T13:02:28.593752+00:00",
   "continual_learning_config": {
     "strategy": "kd_replay",
     "kd_lambda": 0.0,

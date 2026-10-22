@@ -1,32 +1,30 @@
 {
   "version": "1.0",
-  "generated_at": "2026-10-21T18:22:31.377370+00:00",
+  "generated_at": "2026-10-22T13:02:28.549620+00:00",
   "checkpoint_directory": "C:\\Users\\ka760\\OneDrive\\Documents\\finsl_year\\terracil_web_demo\\checkpoints",
   "stages": {
     "stage1": {
       "checkpoint": "stage1_base_seed42.pt",
       "metadata": "stage1_metadata.json",
-      "num_classes": 3,
+      "num_classes": 2,
       "classes": [
         "Forest",
-        "Residential",
         "River"
       ],
-      "top1_accuracy": 0.9694117647058823,
-      "macro_f1": 0.9680663396087352
+      "top1_accuracy": 0.9684848484848485,
+      "macro_f1": 0.9681780958484654
     },
     "stage2": {
       "checkpoint": "stage2_replay_seed42.pt",
       "metadata": "stage2_metadata.json",
-      "num_classes": 4,
+      "num_classes": 3,
       "classes": [
         "Forest",
-        "Residential",
         "River",
         "Highway"
       ],
-      "top1_accuracy": 0.7418181818181818,
-      "macro_f1": 0.7383251772816493
+      "top1_accuracy": 0.9283333333333333,
+      "macro_f1": 0.9251489268666822
     },
     "stage3": {
       "checkpoint": "stage3_replay_seed42.pt",
@@ -34,13 +32,13 @@
       "num_classes": 5,
       "classes": [
         "Forest",
-        "Residential",
         "River",
         "Highway",
+        "Residential",
         "Industrial"
       ],
-      "top1_accuracy": 0.7491358024691358,
-      "macro_f1": 0.7379166757225137
+      "top1_accuracy": 0.9211045364891519,
+      "macro_f1": 0.9171407286968358
     }
   },
   "all_checkpoints": [
@@ -48,16 +46,15 @@
       "filename": "stage1_base_seed42.pt",
       "stage": 1,
       "method": "base",
-      "num_classes": 3,
+      "num_classes": 2,
       "classes": [
         "Forest",
-        "Residential",
         "River"
       ],
-      "top1_accuracy": 0.9694117647058823,
-      "macro_f1": 0.9680663396087352,
-      "params": 60707,
-      "size_fp32_kb": 237.14
+      "top1_accuracy": 0.9684848484848485,
+      "macro_f1": 0.9681780958484654,
+      "params": 60642,
+      "size_fp32_kb": 236.88
     },
     {
       "filename": "stage2_joint_seed42.pt",
@@ -70,8 +67,8 @@
         "River",
         "Highway"
       ],
-      "top1_accuracy": 0.8357575757575758,
-      "macro_f1": 0.8196706635275806,
+      "top1_accuracy": 0.8363636363636363,
+      "macro_f1": 0.8204744208319819,
       "params": 60772,
       "size_fp32_kb": 237.39
     },
@@ -86,8 +83,8 @@
         "River",
         "Highway"
       ],
-      "top1_accuracy": 0.8612121212121212,
-      "macro_f1": 0.8517863467305071,
+      "top1_accuracy": 0.8703030303030304,
+      "macro_f1": 0.8584042129118233,
       "params": 60772,
       "size_fp32_kb": 237.39
     },
@@ -95,17 +92,16 @@
       "filename": "stage2_replay_seed42.pt",
       "stage": 2,
       "method": "replay",
-      "num_classes": 4,
+      "num_classes": 3,
       "classes": [
         "Forest",
-        "Residential",
         "River",
         "Highway"
       ],
-      "top1_accuracy": 0.7418181818181818,
-      "macro_f1": 0.7383251772816493,
-      "params": 60772,
-      "size_fp32_kb": 237.39
+      "top1_accuracy": 0.9283333333333333,
+      "macro_f1": 0.9251489268666822,
+      "params": 60707,
+      "size_fp32_kb": 237.14
     },
     {
       "filename": "stage3_joint_seed42.pt",
@@ -119,8 +115,8 @@
         "Highway",
         "Industrial"
       ],
-      "top1_accuracy": 0.8474074074074074,
-      "macro_f1": 0.830350611640922,
+      "top1_accuracy": 0.8464197530864197,
+      "macro_f1": 0.8293252862177498,
       "params": 60837,
       "size_fp32_kb": 237.64
     },
@@ -136,8 +132,8 @@
         "Highway",
         "Industrial"
       ],
-      "top1_accuracy": 0.8716049382716049,
-      "macro_f1": 0.8651184294107688,
+      "top1_accuracy": 0.8883950617283951,
+      "macro_f1": 0.8818248497082518,
       "params": 60837,
       "size_fp32_kb": 237.64
     },
@@ -148,13 +144,13 @@
       "num_classes": 5,
       "classes": [
         "Forest",
-        "Residential",
         "River",
         "Highway",
+        "Residential",
         "Industrial"
       ],
-      "top1_accuracy": 0.7491358024691358,
-      "macro_f1": 0.7379166757225137,
+      "top1_accuracy": 0.9211045364891519,
+      "macro_f1": 0.9171407286968358,
       "params": 60837,
       "size_fp32_kb": 237.64
     }

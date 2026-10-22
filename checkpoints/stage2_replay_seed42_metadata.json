@@ -3,18 +3,16 @@
   "method": "replay",
   "seed": 42,
   "checkpoint_file": "stage2_replay_seed42.pt",
-  "num_classes": 4,
+  "num_classes": 3,
   "class_names": [
     "Forest",
-    "Residential",
     "River",
     "Highway"
   ],
   "class_to_idx": {
     "Forest": 0,
-    "Residential": 1,
-    "River": 2,
-    "Highway": 3
+    "River": 1,
+    "Highway": 2
   },
   "feature_dim": 64,
   "input_resolution": [
@@ -24,50 +22,43 @@
   ],
   "parameter_counts": {
     "backbone": 60512,
-    "classifier": 260,
-    "total": 60772,
-    "trainable": 60772
+    "classifier": 195,
+    "total": 60707,
+    "trainable": 60707
   },
   "size_kb": {
-    "fp32_kb": 237.39,
-    "int8_kb": 59.35,
-    "total_params": 60772
+    "fp32_kb": 237.14,
+    "int8_kb": 59.28,
+    "total_params": 60707
   },
-  "top1_accuracy": 0.7418181818181818,
-  "top2_accuracy": 0.9884848484848485,
-  "macro_f1": 0.7383251772816493,
+  "top1_accuracy": 0.9283333333333333,
+  "top2_accuracy": 0.9925,
+  "macro_f1": 0.9251489268666822,
   "metrics_summary": {
-    "top1_accuracy_percent": "74.18%",
-    "top2_accuracy_percent": "98.85%",
-    "macro_f1": 0.7383
+    "top1_accuracy_percent": "92.83%",
+    "top2_accuracy_percent": "99.25%",
+    "macro_f1": 0.9251
   },
   "per_class_metrics": {
     "Forest": {
-      "precision": 0.9486081370449678,
-      "recall": 0.9844444444444445,
-      "f1": 0.9661941112322792,
-      "accuracy": 0.9844444444444445,
-      "support": 450
-    },
-    "Residential": {
-      "precision": 0.9828767123287672,
-      "recall": 0.6377777777777778,
-      "f1": 0.7735849056603774,
-      "accuracy": 0.6377777777777778,
+      "precision": 0.9885844748858448,
+      "recall": 0.9622222222222222,
+      "f1": 0.9752252252252253,
+      "accuracy": 0.9622222222222222,
       "support": 450
     },
     "River": {
-      "precision": 0.6621621621621622,
-      "recall": 0.6533333333333333,
-      "f1": 0.6577181208053692,
-      "accuracy": 0.6533333333333333,
+      "precision": 0.9169054441260746,
+      "recall": 0.8533333333333334,
+      "f1": 0.8839779005524862,
+      "accuracy": 0.8533333333333334,
       "support": 375
     },
     "Highway": {
-      "precision": 0.4779270633397313,
-      "recall": 0.664,
-      "f1": 0.5558035714285714,
-      "accuracy": 0.664,
+      "precision": 0.87409200968523,
+      "recall": 0.9626666666666667,
+      "f1": 0.916243654822335,
+      "accuracy": 0.9626666666666667,
       "support": 375
     }
   },
@@ -77,19 +68,10 @@
     "seed": 42,
     "total_exemplars": 500,
     "exemplars_per_class": {
-      "0": 125,
-      "1": 125,
-      "2": 125,
-      "3": 125
+      "0": 167,
+      "1": 167,
+      "2": 166
     }
   },
-  "generated_at": "2026-10-21T18:22:31.492821+00:00",
-  "continual_learning_config": {
-    "strategy": "kd_replay",
-    "kd_lambda": 0.5,
-    "kd_temperature": 2.0,
-    "feature_distill_lambda": 0.1,
-    "use_class_weights": true,
-    "use_weight_alignment": true
-  }
+  "generated_at": "2026-10-22T13:02:28.578876+00:00"
 }

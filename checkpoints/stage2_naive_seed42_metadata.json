@@ -33,41 +33,41 @@
     "int8_kb": 59.35,
     "total_params": 60772
   },
-  "top1_accuracy": 0.8612121212121212,
-  "top2_accuracy": 0.9896969696969697,
-  "macro_f1": 0.8517863467305071,
+  "top1_accuracy": 0.8703030303030304,
+  "top2_accuracy": 0.9921212121212121,
+  "macro_f1": 0.8584042129118233,
   "metrics_summary": {
-    "top1_accuracy_percent": "86.12%",
-    "top2_accuracy_percent": "98.97%",
-    "macro_f1": 0.8518
+    "top1_accuracy_percent": "87.03%",
+    "top2_accuracy_percent": "99.21%",
+    "macro_f1": 0.8584
   },
   "per_class_metrics": {
     "Forest": {
-      "precision": 0.9526881720430107,
-      "recall": 0.9844444444444445,
-      "f1": 0.9683060109289617,
-      "accuracy": 0.9844444444444445,
+      "precision": 0.9713656387665198,
+      "recall": 0.98,
+      "f1": 0.9756637168141593,
+      "accuracy": 0.98,
       "support": 450
     },
     "Residential": {
-      "precision": 0.9764705882352941,
-      "recall": 0.9222222222222223,
-      "f1": 0.9485714285714286,
-      "accuracy": 0.9222222222222223,
+      "precision": 0.9498910675381264,
+      "recall": 0.9688888888888889,
+      "f1": 0.9592959295929593,
+      "accuracy": 0.9688888888888889,
       "support": 450
     },
     "River": {
-      "precision": 0.7443609022556391,
-      "recall": 0.792,
-      "f1": 0.7674418604651163,
-      "accuracy": 0.792,
+      "precision": 0.7364705882352941,
+      "recall": 0.8346666666666667,
+      "f1": 0.7825,
+      "accuracy": 0.8346666666666667,
       "support": 375
     },
     "Highway": {
-      "precision": 0.7368421052631579,
-      "recall": 0.7093333333333334,
-      "f1": 0.7228260869565217,
-      "accuracy": 0.7093333333333334,
+      "precision": 0.7884615384615384,
+      "recall": 0.656,
+      "f1": 0.7161572052401747,
+      "accuracy": 0.656,
       "support": 375
     }
   },
@@ -77,13 +77,12 @@
     "seed": 42,
     "total_exemplars": 500,
     "exemplars_per_class": {
-      "0": 125,
-      "1": 125,
-      "2": 125,
-      "3": 125
+      "0": 167,
+      "1": 167,
+      "2": 166
     }
   },
-  "generated_at": "2026-10-21T18:22:31.487345+00:00",
+  "generated_at": "2026-10-22T13:02:28.573165+00:00",
   "continual_learning_config": {
     "strategy": "kd_replay",
     "kd_lambda": 0.0,

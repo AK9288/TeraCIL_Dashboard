@@ -102,50 +102,50 @@ IMAGE_SIZE = (64, 64)
 
 # SatReCIL incremental stage definitions linking both .json and .pt checkpoints
 STAGE_CONFIGS = {
-    "Stage 1 (3 classes: Forest, Residential, River)": {
+    "Stage 1 (2 classes: Forest, River)": {
         "stage_id": "stage1",
         "stage_num": 1,
         "name": "Stage 1 — Base Model",
-        "num_classes": 3,
-        "classes": ["Forest", "Residential", "River"],
-        "inactive_classes": ["Highway", "Industrial"],
+        "num_classes": 2,
+        "classes": ["Forest", "River"],
+        "inactive_classes": ["Highway", "Residential", "Industrial"],
         "checkpoint_pt": "stage1_base_seed42.pt",
         "checkpoint_json": "stage1_replay_seed42.json",
         "metadata_json": "stage1_metadata.json",
-        "description": "Base model trained from scratch on the first 3 EuroSAT classes.",
-        "top1_accuracy": "96.71%",
+        "description": "Base model trained from scratch on Forest and River.",
+        "top1_accuracy": "96.85%",
         "top2_accuracy": "100.0%",
-        "macro_f1": "0.9657",
+        "macro_f1": "0.9685",
     },
-    "Stage 2 (4 classes: Forest, Residential, River, Highway)": {
+    "Stage 2 (3 classes: Forest, River, Highway)": {
         "stage_id": "stage2",
         "stage_num": 2,
         "name": "Stage 2 — Incremental (+ Highway)",
-        "num_classes": 4,
-        "classes": ["Forest", "Residential", "River", "Highway"],
-        "inactive_classes": ["Industrial"],
+        "num_classes": 3,
+        "classes": ["Forest", "River", "Highway"],
+        "inactive_classes": ["Residential", "Industrial"],
         "checkpoint_pt": "stage2_replay_seed42.pt",
         "checkpoint_json": "stage2_replay_seed42.json",
         "metadata_json": "stage2_metadata.json",
-        "description": "Expands classifier head to 4 classes, learning Highway with replay buffer.",
-        "top1_accuracy": "72.06%",
-        "top2_accuracy": "97.27%",
-        "macro_f1": "0.6898",
+        "description": "Expands classifier head to 3 classes, learning Highway with replay buffer.",
+        "top1_accuracy": "92.83%",
+        "top2_accuracy": "99.08%",
+        "macro_f1": "0.9281",
     },
-    "Stage 3 (5 classes: Forest, Residential, River, Highway, Industrial)": {
+    "Stage 3 (5 classes: Forest, River, Highway, Residential, Industrial)": {
         "stage_id": "stage3",
         "stage_num": 3,
-        "name": "Stage 3 — Full Incremental (+ Industrial)",
+        "name": "Stage 3 — Full Incremental (+ Residential, Industrial)",
         "num_classes": 5,
-        "classes": ["Forest", "Residential", "River", "Highway", "Industrial"],
+        "classes": ["Forest", "River", "Highway", "Residential", "Industrial"],
         "inactive_classes": [],
         "checkpoint_pt": "stage3_replay_seed42.pt",
         "checkpoint_json": "stage3_replay_seed42.json",
         "metadata_json": "stage3_metadata.json",
-        "description": "Expands classifier head to all 5 classes, learning Industrial with replay buffer.",
-        "top1_accuracy": "76.49%",
-        "top2_accuracy": "82.22%",
-        "macro_f1": "0.7394",
+        "description": "Expands classifier head to all 5 classes, learning Residential and Industrial with replay buffer.",
+        "top1_accuracy": "92.11%",
+        "top2_accuracy": "98.52%",
+        "macro_f1": "0.9202",
     },
 }
 
@@ -322,6 +322,14 @@ def load_checkpoint_into_model(model: nn.Module, checkpoint_path: Path) -> nn.Mo
         cleaned = {}
         for key, value in state_dict.items():
             cleaned[key[7:] if key.startswith("module.") else key] = value
+
+        # Dynamic head resizing: adapt model head to checkpoint shape if different
+        if "classifier.weight" in cleaned:
+            ckpt_classes = cleaned["classifier.weight"].shape[0]
+            if model.classifier.out_features != ckpt_classes:
+                model.num_classes = ckpt_classes
+                model.classifier = nn.Linear(model.feature_dim, ckpt_classes)
+
         model.load_state_dict(cleaned, strict=True)
     else:
         raise RuntimeError(f"Unsupported checkpoint type: {type(checkpoint).__name__}")
@@ -363,9 +371,10 @@ def classify(model: EuroSatCompactCNN, image: Image.Image, class_names: List[str
         probabilities = torch.softmax(logits, dim=1)[0].detach().cpu().numpy()
 
     if len(probabilities) != len(class_names):
-        raise RuntimeError(
-            f"Model produced {len(probabilities)} classes, but stage expects {len(class_names)}."
-        )
+        if len(class_names) > len(probabilities):
+            class_names = class_names[: len(probabilities)]
+        else:
+            class_names = list(class_names) + [f"Class {i}" for i in range(len(class_names), len(probabilities))]
 
     order = np.argsort(probabilities)[::-1]
     results = pd.DataFrame([
@@ -397,9 +406,9 @@ st.write(
 st.markdown("### 1. Select Continual Learning Stage")
 
 stage_display_options = [
-    "Stage 1 (3 classes: Forest, Residential, River)",
-    "Stage 2 (4 classes: Forest, Residential, River, Highway)",
-    "Stage 3 (5 classes: Forest, Residential, River, Highway, Industrial)",
+    "Stage 1 (2 classes: Forest, River)",
+    "Stage 2 (3 classes: Forest, River, Highway)",
+    "Stage 3 (5 classes: Forest, River, Highway, Residential, Industrial)",
     "⚡ Compare All 3 Stages (Side-by-Side)",
 ]
 
@@ -415,16 +424,22 @@ is_compare_mode = (selected_option == "⚡ Compare All 3 Stages (Side-by-Side)")
 
 if not is_compare_mode:
     active_stage_info = STAGE_CONFIGS[selected_option]
-    current_classes = active_stage_info["classes"]
-    inactive_classes = active_stage_info["inactive_classes"]
-    current_stage_num = active_stage_info["stage_num"]
     pt_ckpt_name = active_stage_info["checkpoint_pt"]
     json_ckpt_name = active_stage_info["checkpoint_json"]
     meta_json_name = active_stage_info["metadata_json"]
+    current_stage_num = active_stage_info["stage_num"]
 
     # Load JSON Checkpoint data
     replay_json_data = load_json_checkpoint(json_ckpt_name)
     meta_json_data = load_json_checkpoint(meta_json_name)
+
+    # Sync class names dynamically from metadata if available
+    current_classes = list(active_stage_info["classes"])
+    if meta_json_data and "class_names" in meta_json_data:
+        current_classes = meta_json_data["class_names"]
+
+    all_5_classes = ["Forest", "River", "Highway", "Residential", "Industrial"]
+    inactive_classes = [c for c in all_5_classes if c not in current_classes]
 
     # Display Stage details card
     with st.container(border=True):
@@ -505,17 +520,17 @@ else:
         st.caption("Inference will be executed across all three stages simultaneously on the same input image to demonstrate forward and backward transfer.")
         c1, c2, c3 = st.columns(3)
         with c1:
-            st.markdown("**Stage 1 (Base - 3 classes)**")
-            st.markdown("`🌲 Forest` `🏘️ Residential` `🌊 River`")
-            st.caption("JSON: `stage1_replay_seed42.json` (500 exemplars: 167/167/166)")
+            st.markdown("**Stage 1 (Base - 2 classes)**")
+            st.markdown("`🌲 Forest` `🌊 River`")
+            st.caption("JSON: `stage1_replay_seed42.json` (500 exemplars)")
         with c2:
-            st.markdown("**Stage 2 (+Highway - 4 classes)**")
-            st.markdown("`🌲 Forest` `🏘️ Residential` `🌊 River` `🛣️ Highway`")
-            st.caption("JSON: `stage2_replay_seed42.json` (500 exemplars: 125 each)")
+            st.markdown("**Stage 2 (+Highway - 3 classes)**")
+            st.markdown("`🌲 Forest` `🌊 River` `🛣️ Highway`")
+            st.caption("JSON: `stage2_replay_seed42.json` (500 exemplars)")
         with c3:
-            st.markdown("**Stage 3 (+Industrial - 5 classes)**")
-            st.markdown("`🌲 Forest` `🏘️ Residential` `🌊 River` `🛣️ Highway` `🏭 Industrial`")
-            st.caption("JSON: `stage3_replay_seed42.json` (500 exemplars: 100 each)")
+            st.markdown("**Stage 3 (+Residential, Industrial - 5 classes)**")
+            st.markdown("`🌲 Forest` `🌊 River` `🛣️ Highway` `🏘️ Residential` `🏭 Industrial`")
+            st.caption("JSON: `stage3_replay_seed42.json` (500 exemplars)")
 
 # ----------------------------- SIDEBAR SETTINGS -----------------------------
 with st.sidebar:
@@ -674,16 +689,27 @@ if image_to_process is not None:
             st.markdown("### Comparative Results Across Stages")
             c_stage1, c_stage2, c_stage3 = st.columns(3, gap="medium")
 
+            stage_keys = list(STAGE_CONFIGS.keys())
             stage_columns = [
-                (c_stage1, STAGE_CONFIGS["Stage 1 (3 classes: Forest, Residential, River)"]),
-                (c_stage2, STAGE_CONFIGS["Stage 2 (4 classes: Forest, Residential, River, Highway)"]),
-                (c_stage3, STAGE_CONFIGS["Stage 3 (5 classes: Forest, Residential, River, Highway, Industrial)"]),
+                (c_stage1, STAGE_CONFIGS[stage_keys[0]]),
+                (c_stage2, STAGE_CONFIGS[stage_keys[1]]),
+                (c_stage3, STAGE_CONFIGS[stage_keys[2]]),
             ]
 
             for col, s_cfg in stage_columns:
                 with col:
                     st.markdown(f"#### {s_cfg['name']}")
-                    classes_list = s_cfg["classes"]
+                    classes_list = list(s_cfg["classes"])
+                    meta_p = resolve_file_path(s_cfg["metadata_json"])
+                    if meta_p:
+                        try:
+                            with open(meta_p, "r", encoding="utf-8") as f:
+                                m_d = json.load(f)
+                                if "class_names" in m_d:
+                                    classes_list = m_d["class_names"]
+                        except Exception:
+                            pass
+
                     badges_text = " ".join([f"`{CLASS_EMOJIS.get(c, '')} {c}`" for c in classes_list])
                     st.markdown(f"**Classes:** {badges_text}")
 
@@ -715,29 +741,14 @@ st.markdown("#### SatReCIL Checkpoints Reference Table")
 st.dataframe(
     pd.DataFrame([
         {
-            "Stage": "Stage 1 (Base)",
-            "Active Classes": "🌲 Forest, 🏘️ Residential, 🌊 River",
-            "Class Count": 3,
-            "Replay Buffer Checkpoint (.json)": "stage1_replay_seed42.json (167 / 167 / 166)",
-            "Metadata Checkpoint (.json)": "stage1_metadata.json (96.71% Top-1)",
-            "Model Weights (.pt)": "stage1_base_seed42.pt",
-        },
-        {
-            "Stage": "Stage 2 (+ Highway)",
-            "Active Classes": "🌲 Forest, 🏘️ Residential, 🌊 River, 🛣️ Highway",
-            "Class Count": 4,
-            "Replay Buffer Checkpoint (.json)": "stage2_replay_seed42.json (125 each)",
-            "Metadata Checkpoint (.json)": "stage2_metadata.json (72.06% Top-1)",
-            "Model Weights (.pt)": "stage2_replay_seed42.pt",
-        },
-        {
-            "Stage": "Stage 3 (+ Industrial)",
-            "Active Classes": "🌲 Forest, 🏘️ Residential, 🌊 River, 🛣️ Highway, 🏭 Industrial",
-            "Class Count": 5,
-            "Replay Buffer Checkpoint (.json)": "stage3_replay_seed42.json (100 each)",
-            "Metadata Checkpoint (.json)": "stage3_metadata.json (76.49% Top-1)",
-            "Model Weights (.pt)": "stage3_replay_seed42.pt",
-        },
+            "Stage": s_data["name"],
+            "Active Classes": ", ".join([f"{CLASS_EMOJIS.get(c, '')} {c}" for c in s_data["classes"]]),
+            "Class Count": len(s_data["classes"]),
+            "Replay Buffer Checkpoint (.json)": s_data["checkpoint_json"],
+            "Metadata Checkpoint (.json)": f"{s_data['metadata_json']} ({s_data.get('top1_accuracy', '')} Top-1)",
+            "Model Weights (.pt)": s_data["checkpoint_pt"],
+        }
+        for s_data in STAGE_CONFIGS.values()
     ]),
     hide_index=True,
     width="stretch",
